@@ -1,0 +1,271 @@
+
+* NAME: Michelle Odubela
+*
+* STUDENT ID: K2211321
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#ifndef FUNCTIONS_TO_TEST_H__GUARD
+#define FUNCTIONS_TO_TEST_H__GUARD
+
+#define MaxGrid 10
+char grid[MaxGrid][MaxGrid];
+
+int player_won(char letter);
+void player_move(char letter);
+int make_move(int x, int y, char letter);
+void print_Grid();
+int init_grid(int gridSize);
+void begin_game();
+
+
+int gridSize;
+int moveCounter;
+int matchWon = 0;
+char playerChar = 'X';
+
+
+
+int player_won(char letter)
+{
+
+	char diagonalCheck1[gridSize + 1];
+	char diagonalCheck2[gridSize + 1];
+	char characterCheck[gridSize + 1];
+	//These 3 above are my various of check's my program run to check if any player has won the game.
+	//The first diagonal check, checks for any winning combination from top left to bottom right 
+	//The second diagonal check, checks for any winning combination from bottom left to top right
+	//The last check actually create's a new string that would be able to win the game and compares it to the combinations
+	//in the grid, to see if someone won for example a 3x3 grid will have this as'XXX' or 'OOO'
+
+	memset(diagonalCheck1, 0, strlen(diagonalCheck1));
+	memset(diagonalCheck2, 0, strlen(diagonalCheck2));
+	memset(characterCheck, 0, strlen(characterCheck));
+
+	char temp[2];
+	temp[0] = letter;
+	temp[1] = '\0';
+
+	for (int i = 0; i < gridSize; i++)
+	{//This is used to create a string, which is then used to check if either the players have won
+		strcat(characterCheck, temp);
+	}
+
+	for (int i = 0; i < gridSize; i++)
+	{
+		char character[2];
+		character[0] = grid[i][i];
+		character[1] = '\0';
+		strcat(diagonalCheck1, character);
+	}
+
+	for (int i = 0; i < gridSize; i++)
+	{
+		char character[2];
+		character[0] = grid[gridSize - 1 - i][i];
+		character[1] = '\0';
+		strcat(diagonalCheck2, character);
+	}
+	//Both the above for loops generate winning diagonol combinations
+
+	diagonalCheck1[gridSize] = '\0';
+	diagonalCheck2[gridSize] = '\0';
+	characterCheck[gridSize] = '\0';
+
+	//When the diagonals are checked if no winners have been found. Vertical/horizontal checks will then proceed to happen
+	if ((strcmp(diagonalCheck1, characterCheck) == 0) || (strcmp(diagonalCheck2, characterCheck) == 0))
+	{
+		printf("Congratulations Player %c! You have won today's Tic-Tac-Toe game\n", letter);
+		return 1;
+	}
+
+	for (int i = 0; i < gridSize; i++)
+	{
+		char horizontalCheck[gridSize];
+		char verticalCheck[gridSize];
+		char character[2];
+		memset(horizontalCheck, 0, strlen(horizontalCheck));
+		memset(verticalCheck, 0, strlen(verticalCheck));
+
+		for (int j = 0; j < gridSize; j++)
+		{
+			character[0] = grid[i][j];
+			character[1] = '\0';
+			strcat(horizontalCheck, character);
+
+			character[0] = grid[j][i];
+			character[1] = '\0';
+			strcat(verticalCheck, character);
+
+
+		}
+
+		if ((strcmp(horizontalCheck, characterCheck) == 0) || (strcmp(verticalCheck, characterCheck) == 0))
+		{
+			printf("Congratulations Player %c! You have won today's Tic-Tac-Toe game\n", letter);
+			return 1;
+		}//This if using the string's created above compares the combinations that was made to the ones in the grid to see if there was any winner
+
+	}
+
+	return 0;
+}
+
+void player_move(char letter)
+{
+	char InputCoordinates[4];
+
+	printf("========================================================\n");
+	printf("Player %c turn, please enter in the form x,y: ", letter);
+	scanf("%s", InputCoordinates);//Recievies the posistion the player has opted to pick
+
+	if ((InputCoordinates[0] == ',') || (InputCoordinates[1] != ',') || (InputCoordinates[2] == ','))
+	{
+		printf("Invalid entry, please try again in the form x,y\n");
+		player_move(letter);
+	}
+	else
+	{
+		int xCoordinates = InputCoordinates[0] - '0';
+		int yCoordinates = InputCoordinates[2] - '0';
+		make_move(xCoordinates, yCoordinates, letter);
+	}//This if else checks to see if the user has entered the coordinates correctly, if not urging them to try again
+}
+
+int make_move(int x, int y, char letter)
+{
+
+	if ((x<0) || (y<0) || (x>(gridSize - 1)) || (y>(gridSize - 1)))
+	{//This will check to see if the coordinates the user entered are valid
+		printf("You've entered an incorrect coordinate, please try again\n");
+		printf("========================================================\n");
+		player_move(letter);
+	}
+	else
+	{
+		if (grid[y][x] != '.')
+		{//This will check to see if this posistion has already been chosen
+			printf("========================================================\n");
+			printf("This position has already been picked.\n");
+			printf("Please try again.\n");
+			player_move(letter);
+		}
+		else
+		{
+			grid[y][x] = letter;
+			print_Grid();
+
+		}
+
+	}
+
+	return 0;
+}
+
+void print_Grid()
+{
+	if (gridSize == 0)
+	{//This if checks the grid is actually made
+		printf("Grid not made\n");
+	}
+	else
+	{
+		printf("\n  ");
+
+		for (int i = 0; i < gridSize; i++)
+			printf(" %i", i);
+
+		printf("\n");
+
+		for (int i = 0; i < gridSize; i++)
+		{
+			printf("%i  ", i);
+			for (int j = 0; j < gridSize; j++)
+			{
+				printf("%c ", grid[i][j]);
+			}
+			printf("\n");
+		}
+	}
+}//This function is used to print the grid on the screen for the user to play with
+
+
+int init_grid(int gridSize)
+{
+	for (int i = 0; i < gridSize; i++)
+		for (int j = 0; j < gridSize; j++)
+			grid[i][j] = '.';
+
+	return 0;
+}//This function is for making the size of the grid the users would like to play with
+
+
+void begin_game()
+{
+	printf("\nEnter the size of the grid, you would like to play with:"); //This is the first question the user will see
+																		  //This is used to make the desired size of the grid
+	char input[3];
+	fgets(input, 3, stdin);
+	input[strlen(input)] = '\0';
+	gridSize = atoi(input);
+
+	printf("========================================================\n");
+	printf("%i \n", gridSize);
+
+	if ((gridSize<3) || (gridSize >= 11))
+	{
+		printf("Sorry you've entered a size we currently can not accomdate\n");
+		printf("Please try again with a size between 3 and 10\n");
+		begin_game();
+	}//This is here to tell the user they have entered a wrong grid size and to try again
+	else
+	{
+		init_grid(gridSize);
+		printf("Grid of size %ix%i has been initialized\n", gridSize, gridSize);
+		print_Grid();
+	}//The above code will display the grid asked for by the user
+}
+
+
+int main()
+{
+	printf("===================Welcome to Abiye's Tic-Tac-Toe Game================\n");
+	begin_game();
+
+
+	while (matchWon == 0)
+	{
+		if (moveCounter == (gridSize*gridSize))
+		{
+			printf("Unfortnately, the game has ended as a draw.\n");
+			break; // This is put in just in case of a draw occurring, ending the game in the process. 
+		}
+		else
+		{
+			if (moveCounter % 2)
+			{
+				playerChar = 'O';
+
+			}
+			else
+			{
+				playerChar = 'X';
+			}
+
+			player_move(playerChar);
+			if (player_won(playerChar) == 1)
+				matchWon = 1;
+			moveCounter++;
+		}//This while loop will continusoly run this loop until the match is won or a draw occurs, resulting in the game to finish
+	}
+
+	return 0;
+}
+
+#endif
+
+
