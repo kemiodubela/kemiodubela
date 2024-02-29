@@ -1,4 +1,4 @@
-- 👋 Hi, I’m @kemiodubela
+- 👋 Hi, I’m Michelle
 - 👀 I’m interested in cybersecurity and coding!
 - 🌱 I’m currently learning how to hack using python
 - 📫 How to reach me @ Michelle Odubela on linkedin
